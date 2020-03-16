@@ -9,7 +9,23 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, warning=FALSE}
+library(tidyverse)
+```
 
+Code to read in data, name columns, fix NA values.
+```{r}
+adultData <- read.delim("data/adult.data", sep =",",header = FALSE)
+
+colnames(adultData) <- c("age", "workclass", "fnlwgt", "eductation", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+
+adultData[adultData == " ?"] <- NA
+```
+
+Code to explore the NAs.
+```{r}
+sum(is.na(adultData))
+
+sapply(adultData, function(x) sum(length(which(is.na(x)))))
 ```
 
