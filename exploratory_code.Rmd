@@ -11,15 +11,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, warning=FALSE}
 library(tidyverse)
+library(ggplot2)
 ```
 
 Code to read in data, name columns, fix NA values.
 ```{r}
-adultData <- read.delim("data/adult.data", sep =",",header = FALSE)
+adultData <- read.delim("data/adult.data", sep ="," ,header = FALSE, strip.white = TRUE)
 
-colnames(adultData) <- c("age", "workclass", "fnlwgt", "eductation", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+colnames(adultData) <- c("age", "workclass", "fnlwgt", "eductation", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "income")
 
-adultData[adultData == " ?"] <- NA
+adultData[adultData == "?"] <- NA
 ```
 
 Code to explore the NAs.
@@ -27,5 +28,24 @@ Code to explore the NAs.
 sum(is.na(adultData))
 
 sapply(adultData, function(x) sum(length(which(is.na(x)))))
+```
+
+Looking at NAs vs non-NAs and income
+```{r}
+adultData %>%
+    group_by(is.na(native_country)) %>%
+    summarise(sum(income == "<=50K")/length(income))
+
+adultData %>%
+    group_by(is.na(occupation)) %>%
+    summarise(sum(income == "<=50K")/length(income))
+
+adultData %>%
+    group_by(is.na(workclass)) %>%
+    summarise(sum(income == "<=50K")/length(income))
+```
+
+```{r}
+
 ```
 
