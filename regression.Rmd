@@ -1,0 +1,58 @@
+---
+title: "Regression"
+author: "Aleksander Brynjulf Hübert"
+date: "3/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(glmnet)
+library(ModelMetrics)
+```
+
+```{r}
+adultData <- read.delim("data/adult.data", sep ="," ,header = FALSE, strip.white = TRUE)
+
+colnames(adultData) <- c("age", "workclass", "fnlwgt", "eductation", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "income")
+
+adultData[adultData == "?"] <- NA
+adultData <- na.omit(adultData)
+test_set_indices = sample(1:nrow(adultData),round(0.25*nrow(adultData)),replace = FALSE)
+training_set = adultData[-test_set_indices,] 
+test_set = adultData[test_set_indices,] 
+
+```
+
+```{r}
+x_train <- training_set %>%
+    select(-income)
+y_train <- training_set %>%
+    select(income)
+
+x_test <- test_set %>%
+    select(-income)
+y_test <- test_set %>%
+    select(income)
+
+#converting to matrix fro the glmnet package
+x_train <- as.matrix(x_train)
+y_train <- as.matrix(y_train)
+
+x_test <- as.matrix(x_test)
+y_test <- as.matrix(y_test)
+```
+
+
+```{r}
+linearmodel <- lm(data = training_set, income ~ . )
+
+test_predictions <- predict(linearmodel, test_set)
+test_mse  <- mse(test_set$income,test_predictions)
+test_mse
+```
+
