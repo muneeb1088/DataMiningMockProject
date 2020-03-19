@@ -27,6 +27,16 @@ training_set = adultData[-test_set_indices,]
 test_set = adultData[test_set_indices,] 
 
 ```
+Simple linear model
+```{r}
+linearmodel <- lm(data = training_set, income ~ . )
+
+test_predictions <- predict(linearmodel, test_set)
+test_mse  <- mse(test_set$income,test_predictions)
+test_mse
+```
+
+#This code is weird because it creates approx 100 dummy vars to run the glmnet ridge regression. I don't know how to fix the issue yet.
 
 ```{r}
 x_train <- training_set %>%
@@ -40,19 +50,27 @@ y_test <- test_set %>%
     select(income)
 
 #converting to matrix fro the glmnet package
-x_train <- as.matrix(x_train)
-y_train <- as.matrix(y_train)
+?model.matrix
+x_train_mat <-  model.matrix(~. -1, x_train)
+y_train_mat <- model.matrix(~. -1, y_train)[,1]
 
-x_test <- as.matrix(x_test)
-y_test <- as.matrix(y_test)
+x_test_mat <- model.matrix(~. -1, x_test)
+y_test_mat <-  model.matrix(~. -1, y_test)[,1]
 ```
 
 
 ```{r}
-linearmodel <- lm(data = training_set, income ~ . )
+cv_ridge_model <- cv.glmnet(x_train_mat, y_train_mat, alpha = 0)
+cv_ridge_model
+ncol(x_train_mat)
+cv_best_lambda <- cv_ridge_model$lambda.min
+cv_best_lambda
 
-test_predictions <- predict(linearmodel, test_set)
-test_mse  <- mse(test_set$income,test_predictions)
-test_mse
+cv_ridge_pred = predict(cv_ridge_model,s=cv_best_lambda ,x_test_mat)
+
+cv_mse <-mse(cv_ridge_pred, y_test_mat)
+cv_mse
+
+test_mse - cv_mse
 ```
 
