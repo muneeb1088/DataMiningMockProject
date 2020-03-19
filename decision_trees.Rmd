@@ -1,0 +1,46 @@
+---
+title: "Decision_Trees"
+author: "Aleksander Brynjulf Hübert"
+date: "3/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(tree)
+library(ModelMetrics)
+```
+
+```{r}
+adultData <- read.delim("data/adult.data", sep ="," ,header = FALSE, strip.white = TRUE)
+
+colnames(adultData) <- c("age", "workclass", "fnlwgt", "eductation", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "income")
+
+adultData[adultData == "?"] <- NA
+adultData <- na.omit(adultData)
+test_set_indices = sample(1:nrow(adultData),round(0.25*nrow(adultData)),replace = FALSE)
+training_set = adultData[-test_set_indices,] 
+test_set = adultData[test_set_indices,] 
+```
+
+
+#tree code wont work since there are too many levels in certain columns i.e. native_country
+```{r}
+tree = tree(income ~., training_set)
+plot(tree)
+text(tree, pretty=0)
+
+summary(tree)
+
+test_predictions = predict(tree,test_set,type="class")
+
+ptree = prune.tree(tree, k = 3)
+plot(ptree)
+text(ptree, pretty=0)
+```
+
