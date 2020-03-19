@@ -38,9 +38,5 @@ text(tree, pretty=0)
 summary(tree)
 
 test_predictions = predict(tree,test_set,type="class")
-
-ptree = prune.tree(tree, k = 3)
-plot(ptree)
-text(ptree, pretty=0)
 ```
 
