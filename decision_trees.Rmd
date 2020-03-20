@@ -19,7 +19,7 @@ library(ModelMetrics)
 ```{r}
 adultData <- read.delim("data/adult.data", sep ="," ,header = FALSE, strip.white = TRUE)
 
-colnames(adultData) <- c("age", "workclass", "fnlwgt", "eductation", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "income")
+colnames(adultData) <- c("age", "workclass", "fnlwgt", "education", "education_num", "marital", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "income")
 
 adultData[adultData == "?"] <- NA
 adultData <- na.omit(adultData)
@@ -31,7 +31,7 @@ test_set = adultData[test_set_indices,]
 
 #tree code wont work since there are too many levels in certain columns i.e. native_country
 ```{r}
-tree = tree(income ~., training_set)
+tree = tree(income ~c(age,education,marital,race,relationship,sex), training_set)
 plot(tree)
 text(tree, pretty=0)
 
